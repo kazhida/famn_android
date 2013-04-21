@@ -1,4 +1,8 @@
 famn_android
 ============
 
-android client for famn
+famnクライアント用のAndroidアプリ
+基本的にはWEBでできることと同じ。
+現時点では、実際、WebViewで表示しているだけだし。
+
+これに手を加えて、WEBでの利用よりも使いやすいようにしていく予定。
