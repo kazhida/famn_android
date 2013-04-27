@@ -129,18 +129,19 @@ public abstract class AncoActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //  root要素は、縦並びのLinearLayout
-        //  ようするに広告バナーを貼り付けたりしたいのだ。
+        //  root要素は、RelativeLayout
         root = new RelativeLayout(this);
         root.setLayoutParams(new RelativeLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.FILL_PARENT,
-                                    ViewGroup.LayoutParams.FILL_PARENT));
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT));
 
         //  主役のWebView(実際には、機能を拡張したAncoView)。
         webView = new AncoView(this);
 
         root.addView(webView);
         setContentView(root);
+
+        beforeInitialLoad();
 
         //  topページを表示
         changePage(topUrl());
@@ -176,6 +177,11 @@ public abstract class AncoActivity extends Activity {
      *---------------------------------------------*/
 
     /**
+     * 最初のページをロードする前に呼ばれるフック
+     */
+    protected abstract void beforeInitialLoad();
+
+    /**
      * 最初にロードするURLは自分で決める
      *
      * @return  最初にロードするURL
@@ -186,10 +192,9 @@ public abstract class AncoActivity extends Activity {
      * WebViewClientをカスタマイズしたい場合は、これをOverrideする。
      * nullを返すと、WebViewClientを設定しない
      *
-     * @param context   this
      * @return  このクラスでは普通のWebViewClientを返す。
      */
-    protected WebViewClient createWebViewClient(Context context) {
+    protected WebViewClient createWebViewClient() {
         return new WebViewClient();
     }
 
@@ -197,37 +202,17 @@ public abstract class AncoActivity extends Activity {
      * WebChromeClientをカスタマイズしたい場合は、これをOverrideする。
      * nullを返すと、ChromeViewClientを設定しない。
      *
-     * @param context   this
      * @return  このクラスでは、普通のWebChromeClientを返す。
      */
-    protected WebChromeClient createWebChromeClient(Context context) {
+    protected WebChromeClient createWebChromeClient() {
         return new WebChromeClient();
-    }
-
-    /**
-     * 一番下にViewを追加する
-     *
-     * @param view  追加するView
-     */
-    public void appendView(View view) {
-        root.addView(view);
-    }
-
-    /**
-     * JavaScriptにオブジェクトのインスタンスを渡すメソッド
-     *
-     * @param obj   JavaScriptに渡すオブジェクト
-     * @param name  JavaScript上での名前
-     */
-    public void addJsInterface(Object obj, String name) {
-        webView.addJavascriptInterface(obj, name);
     }
 
     /**
      * インテント・ハンドラーを追加するメソッド
      *
-     * @param handler
-     * @return
+     * @param handler   追加するハンドラー
+     * @return          追加できたらtrue
      */
     public boolean addIntentHandler(IntentHandler handler) {
         return handlers.add(handler);
@@ -236,8 +221,8 @@ public abstract class AncoActivity extends Activity {
     /**
      * インテント・ハンドラーを削除するメソッド
      *
-     * @param handler
-     * @return
+     * @param handler   削除するハンドラー
+     * @return          削除できたらtrue
      */
     public boolean removeIntentHandler(IntentHandler handler) {
         return handlers.remove(handler);
@@ -289,15 +274,15 @@ public abstract class AncoActivity extends Activity {
         webView.loadUrl("about:blank");
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        //  戻るボタンで戻る
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
-            webView.goBack();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        //  戻るボタンで戻る
+//        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+//            webView.goBack();
+//            return true;
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
 
     /**
      * Ancoフレームワーク用のウェブ・ビュー
@@ -314,10 +299,10 @@ public abstract class AncoActivity extends Activity {
                                    ViewGroup.LayoutParams.FILL_PARENT, 0.0F));
 
             //  WebChromeClientとWebViewClientの設定
-            WebChromeClient wcc = anco.createWebChromeClient(anco);
+            WebChromeClient wcc = anco.createWebChromeClient();
             if (wcc != null) setWebChromeClient(wcc);
 
-            WebViewClient wvc = anco.createWebViewClient(anco);
+            WebViewClient wvc = anco.createWebViewClient();
             if (wvc != null) setWebViewClient(wvc);
 
             setInitialScale(100);
@@ -330,7 +315,7 @@ public abstract class AncoActivity extends Activity {
             setting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
 //          setBuiltInZoomControls(false);
 
-            //  ddmsという名前のインターフェースで、LoagCat用のログを吐けるようにする。
+            //  ddmsという名前のインターフェースで、LogCat用のログを吐けるようにする。
             addJavascriptInterface(new LogCat(), "ddms");
         }
     }

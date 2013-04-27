@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">famn.mobi</string>
+
+    <string name="home">Home</string>
+    <string name="reload">更新</string>
+    <string name="logout">ログアウト</string>
+    <string name="setting">設定</string>
+    <string name="users">ユーザ管理</string>
+    <string name="about">famn.mobiについて</string>
+    <string name="compose">書込</string>
+
+    <string name="confirm_title">確認</string>
+    <string name="confirm_logout">本当に、ログアウトしますか？</string>
+
+</resources>

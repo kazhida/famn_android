@@ -11,7 +11,7 @@
 
     <style
             name="app_actionbar"
-            parent="@android:style/Widget.Holo.Light.ActionBar"
+            parent="android:style/Widget.Holo.Light.ActionBar"
             >
         <item name="android:background">@color/bg_actionbar</item>
         <item name="android:titleTextStyle">@style/app_actionbar_title</item>

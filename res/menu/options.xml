@@ -3,10 +3,43 @@
 <menu
         xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item   android:id="@+id/menu_home"
+            android:title="@string/home"
+            android:icon="@drawable/ic_action_home"
+            android:showAsAction="always"
+            />
+
     <item   android:id="@+id/menu_reload"
             android:title="@string/reload"
             android:icon="@drawable/ic_action_reload"
-            android:orderInCategory="1"
-            android:showAsAction="ifRoom|withText"
+            android:showAsAction="ifRoom"
+            />
+
+    <item   android:id="@+id/menu_setting"
+            android:title="@string/setting"
+            android:icon="@drawable/ic_action_setting"
+            android:showAsAction="ifRoom"
+            />
+
+    <item   android:id="@+id/menu_users"
+            android:title="@string/users"
+            android:icon="@drawable/ic_action_users"
+            android:showAsAction="ifRoom"
+            android:visible="false"
+            />
+
+    <item   android:id="@+id/menu_compose"
+            android:title="@string/compose"
+            android:icon="@drawable/ic_action_compose_off"
+            android:showAsAction="always"
+            />
+
+    <item   android:id="@+id/menu_logout"
+            android:title="@string/logout"
+            android:showAsAction="never"
+            />
+    <item   android:id="@+id/menu_about"
+            android:title="@string/about"
+            android:showAsAction="never"
             />
 </menu>

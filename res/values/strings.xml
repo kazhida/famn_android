@@ -2,6 +2,16 @@
 <resources>
 
     <string name="app_name">famn.mobi</string>
-    <string name="reload">reload</string>
+
+    <string name="home">Home</string>
+    <string name="reload">Reload</string>
+    <string name="logout">Logout</string>
+    <string name="setting">Setting</string>
+    <string name="users">Users</string>
+    <string name="about">about famn.mobi</string>
+    <string name="compose">Compose</string>
+
+    <string name="confirm_title">Confirm</string>
+    <string name="confirm_logout">Do you really logout?</string>
 
 </resources>
