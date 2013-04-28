@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.ScaleAnimation;
+import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import com.abplus.anco.AncoActivity;
+
 
 public class MainActivity extends AncoActivity {
     private final String APP_URL = "http://famn.mobi";
@@ -41,6 +43,9 @@ public class MainActivity extends AncoActivity {
 
         compose.findViewById(R.id.sample_image).setVisibility(View.GONE);
         compose.setVisibility(View.GONE);
+
+        EditText text = (EditText)compose.findViewById(R.id.compose_text);
+        text.setText(null);
 
         appendView(compose);
     }
@@ -125,9 +130,6 @@ public class MainActivity extends AncoActivity {
             FaceManager manager = FaceManager.sharedInstance();
             spinner.setAdapter(manager.getAdapter(this));
 
-            EditText text = (EditText)compose.findViewById(R.id.compose_text);
-            text.setText(null);
-
             ScaleAnimation animation = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
             animation.setDuration(200);
             compose.startAnimation(animation);
@@ -147,7 +149,7 @@ public class MainActivity extends AncoActivity {
         MenuItem face = getFaceItem();
         if (face != null) {
             face.setChecked(false);
-            face.setEnabled(! disable);
+            face.setEnabled(!disable);
         }
     }
 
@@ -197,8 +199,16 @@ public class MainActivity extends AncoActivity {
         public void onPageFinished (WebView view, String url) {
             Log.d("famn.log", "loaded from " + url);
 
+            String cookie = CookieManager.getInstance().getCookie(url);
+            Log.d("famn.log", "cookie:" + cookie);
+
             if (url.equals(APP_URL) || url.equals(APP_URL + "/")) {
-                showComposePanel();
+                new FaceReader(APP_URL, "/users/current.json").getFaceAsync(cookie, new Runnable() {
+                    @Override
+                    public void run() {
+                        showComposePanel();
+                    }
+                });
             } else {
                 hideComposePanel(true);
             }
@@ -216,13 +226,20 @@ public class MainActivity extends AncoActivity {
 
         private int faceIndex() {
             Spinner spinner = (Spinner)findViewById(R.id.face_spinner);
-            int index = spinner.getSelectedItemPosition();
-            return index + 1;
+            FaceManager.FaceItem item = (FaceManager.FaceItem)spinner.getSelectedItem();
+            return item == null ? 0 : item.getIndex();
+        }
+
+        private void clearText() {
+            EditText text = (EditText)findViewById(R.id.compose_text);
+            text.setText(null);
         }
 
         @Override
         public void onClick(View v) {
             String params = "message=" + messageText() + "&face=" + faceIndex();
+            clearText();
+            hideComposePanel(false);
             webView().postUrl(APP_URL + "/entries", params.getBytes());
         }
     }
