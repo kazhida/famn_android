@@ -10,8 +10,13 @@
     <string name="users">Users</string>
     <string name="about">about famn.mobi</string>
     <string name="compose">Compose</string>
+    <string name="message_hint">Write message here.</string>
+    <string name="face_image">Face Image</string>
+    <string name="send">Send</string>
 
     <string name="confirm_title">Confirm</string>
     <string name="confirm_logout">Do you really logout?</string>
+
+    <string name="dummy_text">It is fine today! How do you do Mr. Brown. I am fine too, thank you. a b c d e f g h i j k</string>
 
 </resources>

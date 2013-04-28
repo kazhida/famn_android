@@ -6,6 +6,9 @@
         android:layout_height="fill_parent"
         >
 
+    <!--    これのIDは、
+            AncoActivityが作ったWebViewのIDとして使うので、
+            ダミーとして必要 -->
     <WebView
             android:id="@+id/web_content"
             android:layout_width="fill_parent"

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/compose_panel"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_compose_panel"
+        >
+
+    <EditText
+            android:id="@+id/compose_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_balloon"
+            android:layout_margin="8dp"
+            android:paddingTop="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="24dp"
+            android:paddingBottom="16dp"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:hint="@string/message_hint"
+            android:text="@string/dummy_text"
+            />
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            >
+        <Spinner
+                android:id="@+id/face_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+        <ImageView
+                android:id="@+id/sample_image"
+                android:src="@drawable/face_sample"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="0dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:contentDescription="@string/face_image"/>
+        <Button
+                android:id="@+id/compose_button"
+                android:text="@string/send"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+    </LinearLayout>
+</LinearLayout>

@@ -30,7 +30,8 @@
 
     <item   android:id="@+id/menu_compose"
             android:title="@string/compose"
-            android:icon="@drawable/ic_action_compose_off"
+            android:icon="@drawable/ic_action_face"
+            android:checkable="true"
             android:showAsAction="always"
             />
 

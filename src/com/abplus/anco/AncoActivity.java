@@ -209,6 +209,15 @@ public abstract class AncoActivity extends Activity {
     }
 
     /**
+     * Viewを追加する
+     *
+     * @param view  追加するView
+     */
+    public void appendView(View view) {
+        root.addView(view);
+    }
+
+    /**
      * インテント・ハンドラーを追加するメソッド
      *
      * @param handler   追加するハンドラー
@@ -295,8 +304,8 @@ public abstract class AncoActivity extends Activity {
 
             //  めいっぱい広げる
             setLayoutParams(new LinearLayout.LayoutParams(
-                                   ViewGroup.LayoutParams.FILL_PARENT,
-                                   ViewGroup.LayoutParams.FILL_PARENT, 0.0F));
+                                   ViewGroup.LayoutParams.MATCH_PARENT,
+                                   ViewGroup.LayoutParams.MATCH_PARENT, 0.0F));
 
             //  WebChromeClientとWebViewClientの設定
             WebChromeClient wcc = anco.createWebChromeClient();
