@@ -203,6 +203,14 @@ public class MainActivity extends AncoActivity {
             Log.d("famn.log", "cookie:" + cookie);
 
             if (url.equals(APP_URL) || url.equals(APP_URL + "/")) {
+                for (String pair : cookie.split(";")) {
+                    String[] kv = pair.split("=");
+                    String key = kv[0].trim();
+                    String val = kv[1].trim();
+                    if (key.equals("my_face")) {
+                        FaceManager.sharedInstance().setFace(val);
+                    }
+                }
                 new FaceReader(APP_URL, "/users/current.json").getFaceAsync(cookie, new Runnable() {
                     @Override
                     public void run() {

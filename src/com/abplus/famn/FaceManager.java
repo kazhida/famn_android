@@ -101,7 +101,9 @@ public class FaceManager {
     }
 
     public void setFace(String face) {
-        current = faces.get(face);
+        if (faces.containsKey(face)) {
+            current = faces.get(face);
+        }
     }
 
     private class FaceAdapter extends BaseAdapter {
