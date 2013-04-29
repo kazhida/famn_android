@@ -27,6 +27,8 @@ public class MainActivity extends AncoActivity {
         webView().setId(R.id.web_content);
         appendComposePanel();
         layoutWebView();
+        acceptEmoji();
+
 
         findViewById(R.id.compose_button).setOnClickListener(new ComposeListener());
     }
@@ -59,6 +61,14 @@ public class MainActivity extends AncoActivity {
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 
         webView().setLayoutParams(params);
+    }
+
+    private void acceptEmoji() {
+        EditText text = (EditText)findViewById(R.id.compose_text);
+        Bundle bundle = text.getInputExtras(true);
+        if (bundle != null) {
+            bundle.putBoolean("allowEmoji", true);
+        }
     }
 
     @Override
