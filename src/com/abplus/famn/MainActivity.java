@@ -19,6 +19,7 @@ import com.abplus.anco.AncoActivity;
 public class MainActivity extends AncoActivity {
     private final String APP_URL = "http://famn.mobi";
     private MenuItem faceItem = null;
+    private MenuItem usersItem = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,7 @@ public class MainActivity extends AncoActivity {
 
         //  後で使うのでとっておく
         faceItem = menu.findItem(R.id.menu_compose);
+        usersItem = menu.findItem(R.id.menu_users);
 
         return true;
     }
@@ -168,6 +170,10 @@ public class MainActivity extends AncoActivity {
         return faceItem;
     }
 
+    private MenuItem getUsersItem() {
+        //  onCreateOptionsMenuのときに保持した値を使う（いいのか？）
+        return usersItem;
+    }
 
     private void logout() {
         // 確認ダイアログの生成
@@ -213,20 +219,21 @@ public class MainActivity extends AncoActivity {
             Log.d("famn.log", "cookie:" + cookie);
 
             if (url.equals(APP_URL) || url.equals(APP_URL + "/")) {
+                boolean aruji = false;
                 for (String pair : cookie.split(";")) {
                     String[] kv = pair.split("=");
                     String key = kv[0].trim();
                     String val = kv[1].trim();
                     if (key.equals("my_face")) {
                         FaceManager.sharedInstance().setFace(val);
+                    } else if (key.equals("aruji")) {
+                        aruji = true;
                     }
                 }
-                new FaceReader(APP_URL, "/users/current.json").getFaceAsync(cookie, new Runnable() {
-                    @Override
-                    public void run() {
-                        showComposePanel();
-                    }
-                });
+                MenuItem item = getUsersItem();
+                if (item != null) item.setVisible(aruji);
+
+                showComposePanel();
             } else {
                 hideComposePanel(true);
             }
