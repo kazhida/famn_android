@@ -38,6 +38,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -281,15 +282,15 @@ public abstract class AncoActivity extends Activity {
         webView.loadUrl("about:blank");
     }
 
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        //  戻るボタンで戻る
-//        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
-//            webView.goBack();
-//            return true;
-//        }
-//        return super.onKeyDown(keyCode, event);
-//    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //  戻るボタンで戻る
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+            webView.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     /**
      * Ancoフレームワーク用のウェブ・ビュー
