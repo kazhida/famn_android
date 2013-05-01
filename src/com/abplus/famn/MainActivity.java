@@ -111,6 +111,11 @@ public class MainActivity extends AncoActivity {
         }
     }
 
+    public void onDestroy() {
+        if (adView != null) adView.destroy();
+        super.onDestroy();
+    }
+
     @Override
     protected void beforeInitialLoad() {
         WebSettings settings = webView().getSettings();
