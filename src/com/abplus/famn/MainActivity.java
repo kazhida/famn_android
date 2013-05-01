@@ -1,7 +1,9 @@
 package com.abplus.famn;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
@@ -31,13 +33,16 @@ public class MainActivity extends AncoActivity {
 
         webView().setId(R.id.web_content);
         appendComposePanel();
+        appendAdView();
         layoutWebView();
         acceptEmoji();
-        appendAdView();
 
         findViewById(R.id.compose_button).setOnClickListener(new ComposeListener());
     }
 
+    /**
+     * 書込パネルを作って、アクティビティに追加する
+     */
     private void appendComposePanel() {
         ViewGroup compose = (ViewGroup)getLayoutInflater().inflate(R.layout.compose_panel, null);
 
@@ -57,16 +62,9 @@ public class MainActivity extends AncoActivity {
         appendView(compose);
     }
 
-    private void layoutWebView() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        params.addRule(RelativeLayout.BELOW, R.id.compose_panel);
-
-        webView().setLayoutParams(params);
-    }
-
+    /**
+     * 広告ビューを作って、アクティビティに追加する
+     */
     private void appendAdView() {
         if (adView == null) {
             adView = new AdView(this, AdSize.BANNER, getString(R.string.mediation_id));
@@ -76,10 +74,10 @@ public class MainActivity extends AncoActivity {
                     ViewGroup.LayoutParams.WRAP_CONTENT
             );
 
-            params.addRule(RelativeLayout.BELOW, R.id.web_content);
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 
             adView.setLayoutParams(params);
+            adView.setId(R.id.ad_view);
             appendView(adView);
 
             AdRequest adRequest = new AdRequest();
@@ -88,6 +86,23 @@ public class MainActivity extends AncoActivity {
         }
     }
 
+    /**
+     * WebViewのレイアウトを書込パネルの下になるようにする
+     */
+    private void layoutWebView() {
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        params.addRule(RelativeLayout.BELOW, R.id.compose_panel);
+        params.addRule(RelativeLayout.ABOVE, R.id.ad_view);
+
+        webView().setLayoutParams(params);
+    }
+
+    /**
+     * 絵文字を入力できるようにする。
+     */
     private void acceptEmoji() {
         EditText text = (EditText)findViewById(R.id.compose_text);
         Bundle bundle = text.getInputExtras(true);
@@ -150,6 +165,9 @@ public class MainActivity extends AncoActivity {
         return false;
     }
 
+    /**
+     * 書込パネルの表示/非表示切り替え(トグル)
+     */
     private void toggleComposePanel() {
         if (findViewById(R.id.compose_panel).getVisibility() == View.GONE) {
             showComposePanel();
@@ -158,6 +176,9 @@ public class MainActivity extends AncoActivity {
         }
     }
 
+    /**
+     * 書込パネルを表示する
+     */
     private void showComposePanel() {
         ViewGroup compose = (ViewGroup)findViewById(R.id.compose_panel);
 
@@ -178,6 +199,11 @@ public class MainActivity extends AncoActivity {
         }
     }
 
+    /**
+     * 書込パネルをかくす
+     *
+     * @param disable   アイコンを無効にする場合はtrue
+     */
     private void hideComposePanel(boolean disable) {
         ViewGroup compose = (ViewGroup)findViewById(R.id.compose_panel);
         compose.setVisibility(View.GONE);
@@ -199,6 +225,9 @@ public class MainActivity extends AncoActivity {
         return usersItem;
     }
 
+    /**
+     * ログアウト処理
+     */
     private void logout() {
         // 確認ダイアログの生成
         AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
@@ -229,6 +258,8 @@ public class MainActivity extends AncoActivity {
 
     private class FamnViewClient extends WebViewClient {
 
+        private ProgressDialog dialog = null;
+
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             return !(url.equals(APP_URL) || url.startsWith(APP_URL + "/")) &&
@@ -236,7 +267,21 @@ public class MainActivity extends AncoActivity {
         }
 
         @Override
-        public void onPageFinished (WebView view, String url) {
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+
+            if (dialog == null) {
+                dialog = new ProgressDialog(MainActivity.this);
+                dialog.setMessage(getString(R.string.loading));
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            }
+            dialog.show();
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            if (dialog != null) dialog.dismiss();
+
             Log.d("famn.log", "loaded from " + url);
 
             String cookie = CookieManager.getInstance().getCookie(url);
@@ -263,6 +308,12 @@ public class MainActivity extends AncoActivity {
             }
 
             super.onPageFinished(view, url);
+        }
+
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            if (dialog != null) dialog.dismiss();
+            super.onReceivedError(view, errorCode, description, failingUrl);
         }
     }
 

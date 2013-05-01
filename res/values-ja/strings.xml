@@ -13,6 +13,7 @@
     <string name="message_hint">ここにメッセージを書き込みます。</string>
     <string name="face_image">表情</string>
     <string name="send">送信</string>
+    <string name="loading">読込中…</string>
 
     <string name="confirm_title">確認</string>
     <string name="confirm_logout">本当に、ログアウトしますか？</string>
