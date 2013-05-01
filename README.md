@@ -1,8 +1,8 @@
-famn_android
+== famn_android
 ============
 
 famnクライアント用のAndroidアプリ
-基本的にはWEBでできることと同じ。
-現時点では、実際、WebViewで表示しているだけだし。
 
-これに手を加えて、WEBでの利用よりも使いやすいようにしていく予定。
+ビルドするには、AdMob SDKを加えるか、MainActivityのadView関連のコードを削除する必要があります。
+また、広告を表示するには、Stringリソース(mediation_id)を適切に指定する必要があります。
+

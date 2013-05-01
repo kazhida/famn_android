@@ -14,12 +14,16 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import com.abplus.anco.AncoActivity;
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
 
 
 public class MainActivity extends AncoActivity {
     private final String APP_URL = "http://famn.mobi";
     private MenuItem faceItem = null;
     private MenuItem usersItem = null;
+    private AdView adView = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,7 +33,7 @@ public class MainActivity extends AncoActivity {
         appendComposePanel();
         layoutWebView();
         acceptEmoji();
-
+        appendAdView();
 
         findViewById(R.id.compose_button).setOnClickListener(new ComposeListener());
     }
@@ -59,9 +63,29 @@ public class MainActivity extends AncoActivity {
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
         params.addRule(RelativeLayout.BELOW, R.id.compose_panel);
-        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 
         webView().setLayoutParams(params);
+    }
+
+    private void appendAdView() {
+        if (adView == null) {
+            adView = new AdView(this, AdSize.BANNER, getString(R.string.mediation_id));
+
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+
+            params.addRule(RelativeLayout.BELOW, R.id.web_content);
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+
+            adView.setLayoutParams(params);
+            appendView(adView);
+
+            AdRequest adRequest = new AdRequest();
+
+            adView.loadAd(adRequest);
+        }
     }
 
     private void acceptEmoji() {
