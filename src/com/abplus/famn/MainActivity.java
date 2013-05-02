@@ -23,17 +23,18 @@ import com.google.ads.AdView;
 
 public class MainActivity extends AncoActivity {
     private final String APP_URL = "http://famn.mobi";
-    private MenuItem faceItem = null;
-    private MenuItem usersItem = null;
-    private AdView adView = null;
+    private MenuItem    faceItem = null;
+    private MenuItem    usersItem = null;
+    private ViewGroup   compose = null;
+    private AdView      adView = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         webView().setId(R.id.web_content);
-        appendComposePanel();
-        appendAdView();
+        compose = appendComposePanel();
+        adView = appendAdView();
         layoutWebView();
         acceptEmoji();
 
@@ -43,31 +44,49 @@ public class MainActivity extends AncoActivity {
     /**
      * 書込パネルを作って、アクティビティに追加する
      */
-    private void appendComposePanel() {
-        ViewGroup compose = (ViewGroup)getLayoutInflater().inflate(R.layout.compose_panel, null);
+    private ViewGroup appendComposePanel() {
+        ViewGroup result = compose;
 
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-        compose.setLayoutParams(params);
+        if (result == null) {
+            result = (ViewGroup)getLayoutInflater().inflate(R.layout.compose_panel, null);
 
-        compose.findViewById(R.id.sample_image).setVisibility(View.GONE);
-        compose.setVisibility(View.GONE);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+            result.setLayoutParams(params);
 
-        EditText text = (EditText)compose.findViewById(R.id.compose_text);
-        text.setText(null);
+            result.findViewById(R.id.sample_image).setVisibility(View.GONE);
+            result.setVisibility(View.GONE);
 
-        appendView(compose);
+            EditText text = (EditText)result.findViewById(R.id.compose_text);
+            text.setText(null);
+            text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        adView.setVisibility(View.GONE);
+                    } else {
+                        adView.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
+            appendView(result);
+        }
+
+        return result;
     }
 
     /**
      * 広告ビューを作って、アクティビティに追加する
      */
-    private void appendAdView() {
-        if (adView == null) {
-            adView = new AdView(this, AdSize.BANNER, getString(R.string.mediation_id));
+    private AdView appendAdView() {
+        AdView result = adView;
+
+        if (result == null) {
+            result = new AdView(this, AdSize.BANNER, getString(R.string.mediation_id));
 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -76,14 +95,16 @@ public class MainActivity extends AncoActivity {
 
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 
-            adView.setLayoutParams(params);
-            adView.setId(R.id.ad_view);
-            appendView(adView);
+            result.setLayoutParams(params);
+            result.setId(R.id.ad_view);
+            appendView(result);
 
             AdRequest adRequest = new AdRequest();
 
-            adView.loadAd(adRequest);
+            result.loadAd(adRequest);
         }
+
+        return result;
     }
 
     /**
@@ -94,8 +115,8 @@ public class MainActivity extends AncoActivity {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        params.addRule(RelativeLayout.BELOW, R.id.compose_panel);
-        params.addRule(RelativeLayout.ABOVE, R.id.ad_view);
+        if (compose != null) params.addRule(RelativeLayout.BELOW, R.id.compose_panel);
+        if (adView  != null) params.addRule(RelativeLayout.ABOVE, R.id.ad_view);
 
         webView().setLayoutParams(params);
     }
@@ -111,6 +132,7 @@ public class MainActivity extends AncoActivity {
         }
     }
 
+    @Override
     public void onDestroy() {
         if (adView != null) adView.destroy();
         super.onDestroy();
@@ -283,16 +305,22 @@ public class MainActivity extends AncoActivity {
             dialog.show();
         }
 
+        private boolean isAppRoot(String url) {
+            Log.d("famn.log", "loaded from " + url);
+            //  リダイレクト前のurlがくるっぽいので、不格好な比較で判定する。
+            return  url.equals(APP_URL) ||
+                    url.equals(APP_URL + "/") ||
+                    url.equals(APP_URL + "/session/new#/") ||
+                    url.equals(APP_URL + "/entries/new#/");
+        }
+
         @Override
         public void onPageFinished(WebView view, String url) {
             if (dialog != null) dialog.dismiss();
 
-            Log.d("famn.log", "loaded from " + url);
-
             String cookie = CookieManager.getInstance().getCookie(url);
-            Log.d("famn.log", "cookie:" + cookie);
 
-            if (url.equals(APP_URL) || url.equals(APP_URL + "/")) {
+            if (isAppRoot(url)) {
                 boolean aruji = false;
                 for (String pair : cookie.split(";")) {
                     String[] kv = pair.split("=");
