@@ -65,10 +65,12 @@ public class MainActivity extends AncoActivity {
             text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
-                    if (hasFocus) {
-                        adView.setVisibility(View.GONE);
-                    } else {
-                        adView.setVisibility(View.VISIBLE);
+                    if (adView != null) {
+                        if (hasFocus) {
+                            adView.setVisibility(View.GONE);
+                        } else {
+                            adView.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
             });
