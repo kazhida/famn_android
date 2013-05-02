@@ -278,8 +278,8 @@ public abstract class AncoActivity extends Activity {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         webView.loadUrl("about:blank");
+        super.onDestroy();
     }
 
     @Override

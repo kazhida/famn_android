@@ -304,7 +304,7 @@ public class MainActivity extends AncoActivity {
                 dialog.setMessage(getString(R.string.loading));
                 dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             }
-            dialog.show();
+            if (url.startsWith("http")) dialog.show();
         }
 
         private boolean isAppRoot(String url) {
