@@ -37,10 +37,12 @@
 
     <item   android:id="@+id/menu_logout"
             android:title="@string/logout"
+            android:icon="@drawable/ic_action_logout"
             android:showAsAction="never"
             />
     <item   android:id="@+id/menu_about"
             android:title="@string/about"
+            android:icon="@drawable/ic_action_about"
             android:showAsAction="never"
             />
 </menu>
