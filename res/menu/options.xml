@@ -5,42 +5,37 @@
 
     <item   android:id="@+id/menu_home"
             android:title="@string/home"
-            android:icon="@drawable/ic_action_home"
-            android:showAsAction="always"
+            android:icon="@drawable/ic_menu_home"
             />
 
     <item   android:id="@+id/menu_reload"
             android:title="@string/reload"
-            android:icon="@drawable/ic_action_reload"
-            android:showAsAction="ifRoom"
+            android:icon="@drawable/ic_menu_reload"
             />
 
     <item   android:id="@+id/menu_setting"
             android:title="@string/setting"
-            android:icon="@drawable/ic_action_setting"
-            android:showAsAction="ifRoom"
+            android:icon="@drawable/ic_menu_setting"
             />
 
     <item   android:id="@+id/menu_users"
             android:title="@string/users"
-            android:icon="@drawable/ic_action_users"
-            android:showAsAction="ifRoom"
+            android:icon="@drawable/ic_menu_users"
             android:visible="false"
             />
 
     <item   android:id="@+id/menu_compose"
             android:title="@string/compose"
-            android:icon="@drawable/ic_action_face"
-            android:checkable="true"
-            android:showAsAction="always"
+            android:icon="@drawable/ic_menu_compose"
             />
 
     <item   android:id="@+id/menu_logout"
             android:title="@string/logout"
-            android:showAsAction="never"
+            android:icon="@drawable/ic_menu_logout"
             />
+
     <item   android:id="@+id/menu_about"
             android:title="@string/about"
-            android:showAsAction="never"
+            android:icon="@drawable/ic_menu_about"
             />
 </menu>

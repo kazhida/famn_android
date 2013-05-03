@@ -9,7 +9,7 @@
     <string name="setting">設定</string>
     <string name="users">ユーザ管理</string>
     <string name="about">famn.mobiについて</string>
-    <string name="compose">書込</string>
+    <string name="compose">書込(トグル)</string>
     <string name="message_hint">ここにメッセージを書き込みます。</string>
     <string name="face_image">表情</string>
     <string name="send">送信</string>

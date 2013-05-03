@@ -4,7 +4,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/compose_panel"
         android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@color/bg_compose_panel"
         >
@@ -12,7 +12,7 @@
     <EditText
             android:id="@+id/compose_text"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:background="@drawable/bg_balloon"
             android:layout_margin="8dp"
@@ -55,7 +55,7 @@
         <Button
                 android:id="@+id/compose_button"
                 android:text="@string/send"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 />
     </LinearLayout>

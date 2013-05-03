@@ -98,8 +98,8 @@ public abstract class AncoActivity extends Activity {
         //  root要素は、RelativeLayout
         root = new RelativeLayout(this);
         root.setLayoutParams(new RelativeLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.MATCH_PARENT));
+                                    ViewGroup.LayoutParams.FILL_PARENT,
+                                    ViewGroup.LayoutParams.FILL_PARENT));
 
         //  主役のWebView(実際には、機能を拡張したAncoView)。
         webView = new AncoView(this);
@@ -270,8 +270,8 @@ public abstract class AncoActivity extends Activity {
 
             //  めいっぱい広げる
             setLayoutParams(new LinearLayout.LayoutParams(
-                                   ViewGroup.LayoutParams.MATCH_PARENT,
-                                   ViewGroup.LayoutParams.MATCH_PARENT, 0.0F));
+                                   ViewGroup.LayoutParams.FILL_PARENT,
+                                   ViewGroup.LayoutParams.FILL_PARENT, 0.0F));
 
             //  WebChromeClientとWebViewClientの設定
             WebChromeClient wcc = anco.createWebChromeClient();
