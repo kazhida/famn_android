@@ -88,7 +88,7 @@ public class MainActivity extends AncoActivity {
         AdView result = adView;
 
         if (result == null) {
-            result = new AdView(this, AdSize.BANNER, getString(R.string.mediation_id));
+            result = new AdView(this, AdSize.BANNER, getString(R.string.publisher_id));
 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
