@@ -21,3 +21,6 @@ local.properties
 
 # Local work
 image_src/*.png
+libs/android-support-v4.jar
+libs/slidingmenu.jar
+libs/actionbarsherlock.jar
