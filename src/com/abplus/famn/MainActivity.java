@@ -8,77 +8,51 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.ScaleAnimation;
-import android.webkit.CookieManager;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import com.abplus.anco.AncoActivity;
+import android.webkit.*;
+import android.widget.*;
+import com.actionbarsherlock.app.SherlockActivity;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
 
-public class MainActivity extends AncoActivity {
+public class MainActivity extends SherlockActivity {
     private final String APP_URL = "http://famn.mobi";
-    private MenuItem    faceItem = null;
-    private MenuItem    usersItem = null;
-    private ViewGroup   compose = null;
+    private com.actionbarsherlock.view.MenuItem    faceItem = null;
+    private com.actionbarsherlock.view.MenuItem    usersItem = null;
     private AdView      adView = null;
+    private WebView     webView = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
 
-        webView().setId(R.id.web_content);
-        compose = appendComposePanel();
         adView = appendAdView();
-        layoutWebView();
-        acceptEmoji();
+        webView = appendWebView();
 
-        findViewById(R.id.compose_button).setOnClickListener(new ComposeListener());
-    }
-
-    /**
-     * 書込パネルを作って、アクティビティに追加する
-     */
-    private ViewGroup appendComposePanel() {
-        ViewGroup result = compose;
-
-        if (result == null) {
-            result = (ViewGroup)getLayoutInflater().inflate(R.layout.compose_panel, null);
-
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            );
-            params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-            result.setLayoutParams(params);
-
-            result.findViewById(R.id.sample_image).setVisibility(View.GONE);
-            result.setVisibility(View.GONE);
-
-            EditText text = (EditText)result.findViewById(R.id.compose_text);
-            text.setText(null);
-            text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if (adView != null) {
-                        if (hasFocus) {
-                            adView.setVisibility(View.GONE);
-                        } else {
-                            adView.setVisibility(View.VISIBLE);
-                        }
+        EditText text = (EditText)findViewById(R.id.compose_text);
+        text.setText(null);
+        text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (adView != null) {
+                    if (hasFocus) {
+                        adView.setVisibility(View.GONE);
+                    } else {
+                        adView.setVisibility(View.VISIBLE);
                     }
                 }
-            });
-
-            appendView(result);
+            }
+        });
+        Bundle bundle = text.getInputExtras(true);
+        if (bundle != null) {
+            bundle.putBoolean("allowEmoji", true);
         }
 
-        return result;
+        findViewById(R.id.compose_button).setOnClickListener(new ComposeListener());
+
+        webView.loadUrl(APP_URL);
     }
 
     /**
@@ -88,18 +62,16 @@ public class MainActivity extends AncoActivity {
         AdView result = adView;
 
         if (result == null) {
-            result = new AdView(this, AdSize.BANNER, getString(R.string.mediation_id));
+            result = new AdView(this, AdSize.BANNER, getString(R.string.publisher_id));
 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
             );
-
-            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-
             result.setLayoutParams(params);
-            result.setId(R.id.ad_view);
-            appendView(result);
+
+            FrameLayout adPanel = (FrameLayout)findViewById(R.id.ad_view_panel);
+            adPanel.addView(result);
 
             AdRequest adRequest = new AdRequest();
 
@@ -109,54 +81,59 @@ public class MainActivity extends AncoActivity {
         return result;
     }
 
-    /**
-     * WebViewのレイアウトを書込パネルの下になるようにする
-     */
-    private void layoutWebView() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        if (compose != null) params.addRule(RelativeLayout.BELOW, R.id.compose_panel);
-        if (adView  != null) params.addRule(RelativeLayout.ABOVE, R.id.ad_view);
+    private WebView appendWebView() {
+        WebView result = webView;
 
-        webView().setLayoutParams(params);
-    }
+        if (result == null) {
+            result = new WebView(this);
 
-    /**
-     * 絵文字を入力できるようにする。
-     */
-    private void acceptEmoji() {
-        EditText text = (EditText)findViewById(R.id.compose_text);
-        Bundle bundle = text.getInputExtras(true);
-        if (bundle != null) {
-            bundle.putBoolean("allowEmoji", true);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            );
+            result.setLayoutParams(params);
+
+            FrameLayout webPanel = (FrameLayout)findViewById(R.id.web_panel);
+            webPanel.addView(result);
+
+            result.setWebChromeClient(new WebChromeClient());
+            result.setWebViewClient(new FamnViewClient());
+
+            result.setInitialScale(100);
+            result.setVerticalScrollBarEnabled(false);
+            result.setHorizontalScrollBarEnabled(false);
+
+            WebSettings settings = result.getSettings();
+            settings.setJavaScriptEnabled(true);
+            settings.setJavaScriptCanOpenWindowsAutomatically(true);
+            settings.setUserAgentString(settings.getUserAgentString() + " famn.content_only");
         }
+
+        return result;
     }
 
     @Override
     public void onDestroy() {
+        webView.loadUrl("about:blank");
         if (adView != null) adView.destroy();
         super.onDestroy();
     }
 
     @Override
-    protected void beforeInitialLoad() {
-        WebSettings settings = webView().getSettings();
-        String userAgent = settings.getUserAgentString();
-        settings.setUserAgentString(userAgent + " famn.content_only");
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //  戻るボタンで戻る
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+            webView.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
-    protected String topUrl() {
-        return APP_URL;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        MenuInflater inflater = getMenuInflater();
+        com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.options, menu);
 
         //  後で使うのでとっておく
@@ -167,25 +144,25 @@ public class MainActivity extends AncoActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch(item.getItemId()){
             case R.id.menu_reload:
-                webView().reload();
+                webView.reload();
                 return true;
             case R.id.menu_home:
-                webView().loadUrl(APP_URL);
+                webView.loadUrl(APP_URL);
                 return true;
             case R.id.menu_logout:
                 logout();
                 return true;
             case R.id.menu_about:
-                webView().loadUrl(APP_URL + "/infos/about");
+                webView.loadUrl(APP_URL + "/infos/about");
                 return true;
             case R.id.menu_setting:
-                webView().loadUrl(APP_URL + "/account/edit");
+                webView.loadUrl(APP_URL + "/account/edit");
                 return true;
             case R.id.menu_users:
-                webView().loadUrl(APP_URL + "/users");
+                webView.loadUrl(APP_URL + "/users");
                 return true;
             case R.id.menu_compose:
                 toggleComposePanel();
@@ -221,7 +198,7 @@ public class MainActivity extends AncoActivity {
             compose.startAnimation(animation);
             compose.setVisibility(View.VISIBLE);
         }
-        MenuItem face = getFaceItem();
+        com.actionbarsherlock.view.MenuItem face = getFaceItem();
         if (face != null) {
             face.setEnabled(true);
             face.setChecked(true);
@@ -237,19 +214,19 @@ public class MainActivity extends AncoActivity {
         ViewGroup compose = (ViewGroup)findViewById(R.id.compose_panel);
         compose.setVisibility(View.GONE);
 
-        MenuItem face = getFaceItem();
+        com.actionbarsherlock.view.MenuItem face = getFaceItem();
         if (face != null) {
             face.setChecked(false);
             face.setEnabled(!disable);
         }
     }
 
-    private MenuItem getFaceItem() {
+    private com.actionbarsherlock.view.MenuItem getFaceItem() {
         //  onCreateOptionsMenuのときに保持した値を使う（いいのか？）
         return faceItem;
     }
 
-    private MenuItem getUsersItem() {
+    private com.actionbarsherlock.view.MenuItem getUsersItem() {
         //  onCreateOptionsMenuのときに保持した値を使う（いいのか？）
         return usersItem;
     }
@@ -266,7 +243,7 @@ public class MainActivity extends AncoActivity {
                 "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        webView().postUrl(APP_URL + "/session", "_method=delete".getBytes());
+                        webView.postUrl(APP_URL + "/session", "_method=delete".getBytes());
                     }
                 });
         alertDlg.setNegativeButton(
@@ -280,7 +257,6 @@ public class MainActivity extends AncoActivity {
         alertDlg.create().show();
     }
 
-    @Override
     protected WebViewClient createWebViewClient() {
         return new FamnViewClient();
     }
@@ -322,7 +298,7 @@ public class MainActivity extends AncoActivity {
 
             String cookie = CookieManager.getInstance().getCookie(url);
 
-            if (isAppRoot(url)) {
+            if (isAppRoot(url) && cookie != null) {
                 boolean aruji = false;
                 for (String pair : cookie.split(";")) {
                     String[] kv = pair.split("=");
@@ -334,7 +310,7 @@ public class MainActivity extends AncoActivity {
                         aruji = true;
                     }
                 }
-                MenuItem item = getUsersItem();
+                com.actionbarsherlock.view.MenuItem item = getUsersItem();
                 if (item != null) item.setVisible(aruji);
 
                 showComposePanel();
@@ -375,7 +351,7 @@ public class MainActivity extends AncoActivity {
             String params = "message=" + messageText() + "&face=" + faceIndex();
             clearText();
             hideComposePanel(false);
-            webView().postUrl(APP_URL + "/entries", params.getBytes());
+            webView.postUrl(APP_URL + "/entries", params.getBytes());
         }
     }
 }
