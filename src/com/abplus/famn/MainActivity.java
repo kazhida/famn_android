@@ -10,16 +10,16 @@ import android.view.*;
 import android.view.animation.ScaleAnimation;
 import android.webkit.*;
 import android.widget.*;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.abplus.actionbarcompat.ActionBarActivity;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
 
-public class MainActivity extends SherlockActivity {
+public class MainActivity extends ActionBarActivity {
     private final String APP_URL = "http://famn.mobi";
-    private com.actionbarsherlock.view.MenuItem    faceItem = null;
-    private com.actionbarsherlock.view.MenuItem    usersItem = null;
+    private MenuItem    faceItem = null;
+    private MenuItem    usersItem = null;
     private AdView      adView = null;
     private WebView     webView = null;
 
@@ -130,10 +130,10 @@ public class MainActivity extends SherlockActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options, menu);
 
         //  後で使うのでとっておく
@@ -144,7 +144,7 @@ public class MainActivity extends SherlockActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.menu_reload:
                 webView.reload();
@@ -198,7 +198,7 @@ public class MainActivity extends SherlockActivity {
             compose.startAnimation(animation);
             compose.setVisibility(View.VISIBLE);
         }
-        com.actionbarsherlock.view.MenuItem face = getFaceItem();
+        MenuItem face = getFaceItem();
         if (face != null) {
             face.setEnabled(true);
             face.setChecked(true);
@@ -214,19 +214,19 @@ public class MainActivity extends SherlockActivity {
         ViewGroup compose = (ViewGroup)findViewById(R.id.compose_panel);
         compose.setVisibility(View.GONE);
 
-        com.actionbarsherlock.view.MenuItem face = getFaceItem();
+        MenuItem face = getFaceItem();
         if (face != null) {
             face.setChecked(false);
             face.setEnabled(!disable);
         }
     }
 
-    private com.actionbarsherlock.view.MenuItem getFaceItem() {
+    private MenuItem getFaceItem() {
         //  onCreateOptionsMenuのときに保持した値を使う（いいのか？）
         return faceItem;
     }
 
-    private com.actionbarsherlock.view.MenuItem getUsersItem() {
+    private MenuItem getUsersItem() {
         //  onCreateOptionsMenuのときに保持した値を使う（いいのか？）
         return usersItem;
     }
@@ -310,7 +310,7 @@ public class MainActivity extends SherlockActivity {
                         aruji = true;
                     }
                 }
-                com.actionbarsherlock.view.MenuItem item = getUsersItem();
+                MenuItem item = getUsersItem();
                 if (item != null) item.setVisible(aruji);
 
                 showComposePanel();
