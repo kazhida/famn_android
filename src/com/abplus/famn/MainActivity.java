@@ -14,6 +14,7 @@ import com.abplus.actionbarcompat.ActionBarActivity;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -22,12 +23,14 @@ public class MainActivity extends ActionBarActivity {
     private MenuItem    usersItem = null;
     private AdView      adView = null;
     private WebView     webView = null;
+    private SlidingMenu slidingMenu = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        slidingMenu = initSlidingMenu();
         adView = appendAdView();
         webView = appendWebView();
 
@@ -112,6 +115,26 @@ public class MainActivity extends ActionBarActivity {
         return result;
     }
 
+    private SlidingMenu initSlidingMenu() {
+        SlidingMenu result = slidingMenu;
+
+        if (result == null) {
+            result = new SlidingMenu(this);
+
+            result.setMode(SlidingMenu.LEFT);
+            result.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+            result.setShadowWidthRes(R.dimen.slidingmenu_shadow_width);
+            result.setShadowDrawable(R.drawable.sdm_shadow);
+            result.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+            result.setFadeDegree(0.35f);
+            result.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
+
+            result.setMenu(R.layout.slidingmenumain);
+        }
+
+        return result;
+    }
+
     @Override
     public void onDestroy() {
         webView.loadUrl("about:blank");
@@ -131,14 +154,15 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
 
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options, menu);
+        inflater.inflate(R.menu.actions, menu);
 
         //  後で使うのでとっておく
         faceItem = menu.findItem(R.id.menu_compose);
         usersItem = menu.findItem(R.id.menu_users);
+
+        super.onCreateOptionsMenu(menu);
 
         return true;
     }
@@ -146,6 +170,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
+            case android.R.id.home:
+                slidingMenu.toggle();
+                return true;
             case R.id.menu_reload:
                 webView.reload();
                 return true;

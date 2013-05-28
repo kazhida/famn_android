@@ -24,12 +24,6 @@
             android:visible="false"
             />
 
-    <item   android:id="@+id/menu_compose"
-            android:title="@string/compose"
-            android:icon="@drawable/ic_menu_compose"
-            android:showAsAction="always"
-            />
-
     <item   android:id="@+id/menu_logout"
             android:title="@string/logout"
             android:icon="@drawable/ic_menu_logout"
