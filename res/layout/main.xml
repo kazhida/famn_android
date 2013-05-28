@@ -31,7 +31,6 @@
                 android:inputType="textMultiLine"
                 android:hint="@string/message_hint"
                 android:text="@string/dummy_text"
-                android:textSize="8pt"
                 />
 
         <LinearLayout

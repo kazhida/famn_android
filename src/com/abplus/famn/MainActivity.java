@@ -325,21 +325,22 @@ public class MainActivity extends ActionBarActivity {
 
             String cookie = CookieManager.getInstance().getCookie(url);
 
-            if (isAppRoot(url) && cookie != null) {
-                boolean aruji = false;
-                for (String pair : cookie.split(";")) {
-                    String[] kv = pair.split("=");
-                    String key = kv[0].trim();
-                    String val = kv[1].trim();
-                    if (key.equals("my_face")) {
-                        FaceManager.sharedInstance().setFace(val);
-                    } else if (key.equals("aruji")) {
-                        aruji = true;
+            if (isAppRoot(url)) {
+                if (cookie != null) {
+                    boolean aruji = false;
+                    for (String pair : cookie.split(";")) {
+                        String[] kv = pair.split("=");
+                        String key = kv[0].trim();
+                        String val = kv[1].trim();
+                        if (key.equals("my_face")) {
+                            FaceManager.sharedInstance().setFace(val);
+                        } else if (key.equals("aruji")) {
+                            aruji = true;
+                        }
                     }
+                    MenuItem item = getUsersItem();
+                    if (item != null) item.setVisible(aruji);
                 }
-                MenuItem item = getUsersItem();
-                if (item != null) item.setVisible(aruji);
-
                 showComposePanel();
             } else {
                 hideComposePanel(true);
