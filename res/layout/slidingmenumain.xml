@@ -1,5 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.jeremyfeinstein.slidingmenu.lib.SlidingMenu xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/slidingmenumain"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" />
+<com.jeremyfeinstein.slidingmenu.lib.SlidingMenu
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/slidingmenumain"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/bg_menu"
+        >
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            >
+
+        <!-- ホーム -->
+        <LinearLayout
+                android:id="@+id/menu_home"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginBottom="1dp"
+                android:background="@drawable/bg_menu"
+                >
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_action_home"
+                    android:contentDescription="@string/home"/>
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:padding="4dp"
+                    android:text="@string/home"
+                    android:textColor="@color/text_menu"
+                    android:textSize="10pt"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_menu"
+                    />
+        </LinearLayout>
+
+        <!-- 更新 -->
+        <LinearLayout
+                android:id="@+id/menu_reload"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@drawable/bg_menu"
+                >
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_action_reload"
+                    android:contentDescription="@string/reload"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:padding="4dp"
+                    android:text="@string/reload"
+                    android:textColor="@color/text_menu"
+                    android:textSize="10pt"
+                    android:gravity="center_vertical"
+                    />
+        </LinearLayout>
+
+        <!-- 書込 -->
+        <LinearLayout
+                android:id="@+id/menu_compose"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@drawable/bg_menu"
+                >
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_action_compose"
+                    android:contentDescription="@string/compose"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:padding="4dp"
+                    android:text="@string/compose"
+                    android:textColor="@color/text_menu"
+                    android:textSize="10pt"
+                    android:gravity="center_vertical"
+                    />
+        </LinearLayout>
+
+        <!-- 設定 -->
+       <LinearLayout
+                android:id="@+id/menu_setting"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@drawable/bg_menu"
+                >
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_action_setting"
+                    android:contentDescription="@string/setting"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:padding="4dp"
+                    android:text="@string/setting"
+                    android:textColor="@color/text_menu"
+                    android:textSize="10pt"
+                    android:gravity="center_vertical"
+                    />
+        </LinearLayout>
+
+        <!-- ユーザ管理 -->
+        <LinearLayout
+                android:id="@+id/menu_user"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="@drawable/bg_menu"
+                >
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_action_users"
+                    android:contentDescription="@string/users"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:padding="4dp"
+                    android:text="@string/users"
+                    android:textColor="@color/text_menu"
+                    android:textSize="10pt"
+                    android:gravity="center_vertical"
+                    />
+        </LinearLayout>
+
+        <!-- ログアウト -->
+        <LinearLayout
+                android:id="@+id/menu_logout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/bg_menu"
+                >
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_action_logout"
+                    android:contentDescription="@string/logout"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:padding="4dp"
+                    android:text="@string/logout"
+                    android:textColor="@color/text_menu"
+                    android:textSize="10pt"
+                    android:gravity="center_vertical"
+                    />
+        </LinearLayout>
+    </LinearLayout>
+</com.jeremyfeinstein.slidingmenu.lib.SlidingMenu>

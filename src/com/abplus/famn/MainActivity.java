@@ -1,5 +1,6 @@
 package com.abplus.famn;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -84,6 +85,7 @@ public class MainActivity extends ActionBarActivity {
         return result;
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private WebView appendWebView() {
         WebView result = webView;
 
@@ -127,7 +129,7 @@ public class MainActivity extends ActionBarActivity {
             result.setShadowDrawable(R.drawable.sdm_shadow);
             result.setBehindOffsetRes(R.dimen.slidingmenu_offset);
             result.setFadeDegree(0.35f);
-            result.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
+            result.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
 
             result.setMenu(R.layout.slidingmenumain);
         }
@@ -159,8 +161,8 @@ public class MainActivity extends ActionBarActivity {
         inflater.inflate(R.menu.actions, menu);
 
         //  後で使うのでとっておく
-        faceItem = menu.findItem(R.id.menu_compose);
-        usersItem = menu.findItem(R.id.menu_users);
+        faceItem = menu.findItem(R.id.action_compose);
+//        usersItem = menu.findItem(R.id.menu_users);
 
         super.onCreateOptionsMenu(menu);
 
@@ -173,25 +175,25 @@ public class MainActivity extends ActionBarActivity {
             case android.R.id.home:
                 slidingMenu.toggle();
                 return true;
-            case R.id.menu_reload:
-                webView.reload();
-                return true;
-            case R.id.menu_home:
-                webView.loadUrl(APP_URL);
-                return true;
-            case R.id.menu_logout:
-                logout();
-                return true;
-            case R.id.menu_about:
+//            case R.id.menu_reload:
+//                webView.reload();
+//                return true;
+//            case R.id.menu_home:
+//                webView.loadUrl(APP_URL);
+//                return true;
+//            case R.id.menu_logout:
+//                logout();
+//                return true;
+            case R.id.action_about:
                 webView.loadUrl(APP_URL + "/infos/about");
                 return true;
-            case R.id.menu_setting:
-                webView.loadUrl(APP_URL + "/account/edit");
-                return true;
-            case R.id.menu_users:
-                webView.loadUrl(APP_URL + "/users");
-                return true;
-            case R.id.menu_compose:
+//            case R.id.menu_setting:
+//                webView.loadUrl(APP_URL + "/account/edit");
+//                return true;
+//            case R.id.menu_users:
+//                webView.loadUrl(APP_URL + "/users");
+//                return true;
+            case R.id.action_compose:
                 toggleComposePanel();
                 return true;
         }
@@ -341,7 +343,13 @@ public class MainActivity extends ActionBarActivity {
                     MenuItem item = getUsersItem();
                     if (item != null) item.setVisible(aruji);
                 }
-                showComposePanel();
+//                showComposePanel();
+                MenuItem face = getFaceItem();
+                if (face != null) {
+                    face.setEnabled(true);
+                    face.setChecked(true);
+                }
+                hideComposePanel(false);
             } else {
                 hideComposePanel(true);
             }

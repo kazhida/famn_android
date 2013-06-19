@@ -3,7 +3,7 @@
 
     <string name="app_name">famn.mobi</string>
 
-    <string name="home">Home</string>
+    <string name="home">ホーム</string>
     <string name="reload">更新</string>
     <string name="logout">ログアウト</string>
     <string name="setting">設定</string>
