@@ -21,7 +21,6 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 public class MainActivity extends ActionBarActivity {
     private final String APP_URL = "http://famn.mobi";
     private MenuItem    faceItem = null;
-    private MenuItem    usersItem = null;
     private AdView      adView = null;
     private WebView     webView = null;
     private SlidingMenu slidingMenu = null;
@@ -54,7 +53,7 @@ public class MainActivity extends ActionBarActivity {
             bundle.putBoolean("allowEmoji", true);
         }
 
-        findViewById(R.id.compose_button).setOnClickListener(new ComposeListener());
+        findViewById(R.id.send_button).setOnClickListener(new ComposeListener());
 
         webView.loadUrl(APP_URL);
     }
@@ -132,6 +131,13 @@ public class MainActivity extends ActionBarActivity {
             result.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
 
             result.setMenu(R.layout.slidingmenumain);
+
+            result.findViewById(R.id.home_button).setOnClickListener(new MoveListener(APP_URL));
+            result.findViewById(R.id.reload_button).setOnClickListener(new MoveListener(null));
+            result.findViewById(R.id.compose_button).setOnClickListener(new MoveListener(APP_URL + "/entries/new"));
+            result.findViewById(R.id.setting_button).setOnClickListener(new MoveListener(APP_URL + "/account/edit"));
+            result.findViewById(R.id.users_button).setOnClickListener(new MoveListener(APP_URL + "/users"));
+            result.findViewById(R.id.logout_button).setOnClickListener(new LogoutListener());
         }
 
         return result;
@@ -156,17 +162,11 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actions, menu);
-
         //  後で使うのでとっておく
         faceItem = menu.findItem(R.id.action_compose);
-//        usersItem = menu.findItem(R.id.menu_users);
-
-        super.onCreateOptionsMenu(menu);
-
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -175,26 +175,14 @@ public class MainActivity extends ActionBarActivity {
             case android.R.id.home:
                 slidingMenu.toggle();
                 return true;
-//            case R.id.menu_reload:
-//                webView.reload();
-//                return true;
-//            case R.id.menu_home:
-//                webView.loadUrl(APP_URL);
-//                return true;
-//            case R.id.menu_logout:
-//                logout();
-//                return true;
-            case R.id.action_about:
-                webView.loadUrl(APP_URL + "/infos/about");
+            case R.id.action_reload:
+                webView.reload();
                 return true;
-//            case R.id.menu_setting:
-//                webView.loadUrl(APP_URL + "/account/edit");
-//                return true;
-//            case R.id.menu_users:
-//                webView.loadUrl(APP_URL + "/users");
-//                return true;
             case R.id.action_compose:
                 toggleComposePanel();
+                return true;
+            case R.id.action_about:
+                webView.loadUrl(APP_URL + "/infos/about");
                 return true;
         }
         return false;
@@ -255,37 +243,6 @@ public class MainActivity extends ActionBarActivity {
         return faceItem;
     }
 
-    private MenuItem getUsersItem() {
-        //  onCreateOptionsMenuのときに保持した値を使う（いいのか？）
-        return usersItem;
-    }
-
-    /**
-     * ログアウト処理
-     */
-    private void logout() {
-        // 確認ダイアログの生成
-        AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
-        alertDlg.setTitle(getString(R.string.confirm_title));
-        alertDlg.setMessage(getString(R.string.confirm_logout));
-        alertDlg.setPositiveButton(
-                "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        webView.postUrl(APP_URL + "/session", "_method=delete".getBytes());
-                    }
-                });
-        alertDlg.setNegativeButton(
-                "Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-
-        // 表示
-        alertDlg.create().show();
-    }
-
     protected WebViewClient createWebViewClient() {
         return new FamnViewClient();
     }
@@ -340,10 +297,13 @@ public class MainActivity extends ActionBarActivity {
                             aruji = true;
                         }
                     }
-                    MenuItem item = getUsersItem();
-                    if (item != null) item.setVisible(aruji);
+                    //  ユーザ管理できるのは主だけ
+                    if (aruji) {
+                        slidingMenu.findViewById(R.id.menu_users).setVisibility(View.VISIBLE);
+                    } else {
+                        slidingMenu.findViewById(R.id.menu_users).setVisibility(View.GONE);
+                    }
                 }
-//                showComposePanel();
                 MenuItem face = getFaceItem();
                 if (face != null) {
                     face.setEnabled(true);
@@ -388,6 +348,54 @@ public class MainActivity extends ActionBarActivity {
             clearText();
             hideComposePanel(false);
             webView.postUrl(APP_URL + "/entries", params.getBytes());
+        }
+    }
+
+    private class MoveListener implements View.OnClickListener {
+        private String url;
+
+        MoveListener(String url) {
+            this.url = url;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (url == null) {
+                webView.reload();
+            } else {
+                webView.loadUrl(url);
+            }
+            slidingMenu.showContent(true);
+        }
+    }
+
+    private class LogoutListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            // 確認ダイアログの生成
+            AlertDialog.Builder alertDlg = new AlertDialog.Builder(MainActivity.this);
+            alertDlg.setTitle(getString(R.string.confirm_title));
+            alertDlg.setMessage(getString(R.string.confirm_logout));
+            alertDlg.setPositiveButton(
+                    "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            webView.postUrl(APP_URL + "/session", "_method=delete".getBytes());
+                            slidingMenu.showContent(true);
+                        }
+                    });
+            alertDlg.setNegativeButton(
+                    "Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            slidingMenu.showContent(true);
+
+                        }
+                    });
+
+            // 表示
+            alertDlg.create().show();
         }
     }
 }

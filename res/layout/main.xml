@@ -61,7 +61,7 @@
                     android:visibility="gone"/>
 
             <Button
-                    android:id="@+id/compose_button"
+                    android:id="@+id/send_button"
                     android:text="@string/send"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
