@@ -13,6 +13,15 @@
             android:layout_height="wrap_content"
             >
 
+        <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:background="@color/bg_actionbar"
+                android:text="@string/ope_menu"
+                android:textColor="@color/text_actionbar"
+                android:textSize="8pt"
+                />
         <!-- ホーム -->
         <FrameLayout
                 android:id="@+id/menu_home"

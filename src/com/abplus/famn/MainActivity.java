@@ -128,7 +128,7 @@ public class MainActivity extends ActionBarActivity {
             result.setShadowDrawable(R.drawable.sdm_shadow);
             result.setBehindOffsetRes(R.dimen.slidingmenu_offset);
             result.setFadeDegree(0.35f);
-            result.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+            result.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
 
             result.setMenu(R.layout.slidingmenumain);
 

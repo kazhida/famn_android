@@ -4,7 +4,7 @@
 
     <item   android:id="@+id/action_reload"
             android:title="@string/reload"
-            android:icon="@drawable/ic_action_reload"
+            android:icon="@drawable/ic_action_reload_normal"
             android:showAsAction="always"
             />
 
