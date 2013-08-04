@@ -188,6 +188,16 @@ public class MainActivity extends ActionBarActivity {
         return false;
     }
 
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        switch(item.getItemId()){
+            case android.R.id.home:
+                slidingMenu.toggle();
+                break;
+        }
+        return super.onMenuItemSelected(featureId, item);
+    }
+
     /**
      * 書込パネルの表示/非表示切り替え(トグル)
      */
