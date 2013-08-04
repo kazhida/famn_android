@@ -3,6 +3,7 @@
 
     <string name="app_name">famn.mobi</string>
 
+    <string name="ope_menu">Operation Menu</string>
     <string name="home">Home</string>
     <string name="reload">Reload</string>
     <string name="logout">Logout</string>

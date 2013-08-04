@@ -1,24 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:background="@color/bg_root"
         >
 
-    <!--    これのIDは、
-            AncoActivityが作ったWebViewのIDとして使うので、
-            ダミーとして必要 -->
-    <WebView
-            android:id="@+id/web_content"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            />
-    <View
-            android:id="@+id/ad_view"
+    <LinearLayout
+            android:id="@+id/compose_panel"
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@color/bg_compose_panel"
+            >
+
+        <EditText
+                android:id="@+id/compose_text"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bg_balloon"
+                android:layout_margin="8dp"
+                android:paddingTop="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="24dp"
+                android:paddingBottom="16dp"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:hint="@string/message_hint"
+                android:text="@string/dummy_text"
+                />
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                >
+            <Spinner
+                    android:id="@+id/face_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    />
+            <ImageView
+                    android:id="@+id/sample_image"
+                    android:src="@drawable/face_sample"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:contentDescription="@string/face_image"
+                    android:visibility="gone"/>
+
+            <Button
+                    android:id="@+id/send_button"
+                    android:text="@string/send"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <FrameLayout
+            android:id="@+id/ad_view_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            >
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:background="@color/bg_dummy_view"
+                />
+    </FrameLayout>
+
+    <FrameLayout
+            android:id="@+id/web_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/compose_panel"
+            android:layout_above="@id/ad_view_panel"
             />
 
-</LinearLayout>
+</RelativeLayout>
 

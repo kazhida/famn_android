@@ -2,6 +2,12 @@
 <resources>
 
     <color name="bg_actionbar">#ff99cc</color>
+    <color name="bg_root">#ffffcc</color>
     <color name="text_actionbar">#ffff66</color>
-    <color name="bg_compose_panel">#ffff99</color>
+    <color name="bg_compose_panel">#ffffff</color>
+    <color name="bg_menu">#666666</color>
+    <color name="bg_menu_item">#ffaacc</color>
+    <color name="text_menu">#ffffff</color>
+
+    <color name="bg_dummy_view">#999999</color>
 </resources>

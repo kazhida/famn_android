@@ -1,5 +1,6 @@
 package com.abplus.famn;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -8,77 +9,53 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.ScaleAnimation;
-import android.webkit.CookieManager;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import com.abplus.anco.AncoActivity;
+import android.webkit.*;
+import android.widget.*;
+import com.abplus.actionbarcompat.ActionBarActivity;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 
-public class MainActivity extends AncoActivity {
+public class MainActivity extends ActionBarActivity {
     private final String APP_URL = "http://famn.mobi";
     private MenuItem    faceItem = null;
-    private MenuItem    usersItem = null;
-    private ViewGroup   compose = null;
     private AdView      adView = null;
+    private WebView     webView = null;
+    private SlidingMenu slidingMenu = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
 
-        webView().setId(R.id.web_content);
-        compose = appendComposePanel();
+        slidingMenu = initSlidingMenu();
         adView = appendAdView();
-        layoutWebView();
-        acceptEmoji();
+        webView = appendWebView();
 
-        findViewById(R.id.compose_button).setOnClickListener(new ComposeListener());
-    }
-
-    /**
-     * 書込パネルを作って、アクティビティに追加する
-     */
-    private ViewGroup appendComposePanel() {
-        ViewGroup result = compose;
-
-        if (result == null) {
-            result = (ViewGroup)getLayoutInflater().inflate(R.layout.compose_panel, null);
-
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            );
-            params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-            result.setLayoutParams(params);
-
-            result.findViewById(R.id.sample_image).setVisibility(View.GONE);
-            result.setVisibility(View.GONE);
-
-            EditText text = (EditText)result.findViewById(R.id.compose_text);
-            text.setText(null);
-            text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if (adView != null) {
-                        if (hasFocus) {
-                            adView.setVisibility(View.GONE);
-                        } else {
-                            adView.setVisibility(View.VISIBLE);
-                        }
+        EditText text = (EditText)findViewById(R.id.compose_text);
+        text.setText(null);
+        text.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (adView != null) {
+                    if (hasFocus) {
+                        adView.setVisibility(View.GONE);
+                    } else {
+                        adView.setVisibility(View.VISIBLE);
                     }
                 }
-            });
-
-            appendView(result);
+            }
+        });
+        Bundle bundle = text.getInputExtras(true);
+        if (bundle != null) {
+            bundle.putBoolean("allowEmoji", true);
         }
 
-        return result;
+        findViewById(R.id.send_button).setOnClickListener(new ComposeListener());
+
+        webView.loadUrl(APP_URL);
     }
 
     /**
@@ -94,12 +71,10 @@ public class MainActivity extends AncoActivity {
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
             );
-
-            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-
             result.setLayoutParams(params);
-            result.setId(R.id.ad_view);
-            appendView(result);
+
+            FrameLayout adPanel = (FrameLayout)findViewById(R.id.ad_view_panel);
+            adPanel.addView(result);
 
             AdRequest adRequest = new AdRequest();
 
@@ -109,86 +84,105 @@ public class MainActivity extends AncoActivity {
         return result;
     }
 
-    /**
-     * WebViewのレイアウトを書込パネルの下になるようにする
-     */
-    private void layoutWebView() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        if (compose != null) params.addRule(RelativeLayout.BELOW, R.id.compose_panel);
-        if (adView  != null) params.addRule(RelativeLayout.ABOVE, R.id.ad_view);
+    @SuppressLint("SetJavaScriptEnabled")
+    private WebView appendWebView() {
+        WebView result = webView;
 
-        webView().setLayoutParams(params);
+        if (result == null) {
+            result = new WebView(this);
+
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            );
+            result.setLayoutParams(params);
+
+            FrameLayout webPanel = (FrameLayout)findViewById(R.id.web_panel);
+            webPanel.addView(result);
+
+            result.setWebChromeClient(new WebChromeClient());
+            result.setWebViewClient(new FamnViewClient());
+
+            result.setInitialScale(100);
+            result.setVerticalScrollBarEnabled(false);
+            result.setHorizontalScrollBarEnabled(false);
+
+            WebSettings settings = result.getSettings();
+            settings.setJavaScriptEnabled(true);
+            settings.setJavaScriptCanOpenWindowsAutomatically(true);
+            settings.setUserAgentString(settings.getUserAgentString() + " famn.content_only");
+        }
+
+        return result;
     }
 
-    /**
-     * 絵文字を入力できるようにする。
-     */
-    private void acceptEmoji() {
-        EditText text = (EditText)findViewById(R.id.compose_text);
-        Bundle bundle = text.getInputExtras(true);
-        if (bundle != null) {
-            bundle.putBoolean("allowEmoji", true);
+    private SlidingMenu initSlidingMenu() {
+        SlidingMenu result = slidingMenu;
+
+        if (result == null) {
+            result = new SlidingMenu(this);
+
+            result.setMode(SlidingMenu.LEFT);
+            result.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+            result.setShadowWidthRes(R.dimen.slidingmenu_shadow_width);
+            result.setShadowDrawable(R.drawable.sdm_shadow);
+            result.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+            result.setFadeDegree(0.35f);
+            result.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
+
+            result.setMenu(R.layout.slidingmenumain);
+
+            result.findViewById(R.id.home_button).setOnClickListener(new MoveListener(APP_URL));
+            result.findViewById(R.id.reload_button).setOnClickListener(new MoveListener(null));
+            result.findViewById(R.id.compose_button).setOnClickListener(new MoveListener(APP_URL + "/entries/new"));
+            result.findViewById(R.id.setting_button).setOnClickListener(new MoveListener(APP_URL + "/account/edit"));
+            result.findViewById(R.id.users_button).setOnClickListener(new MoveListener(APP_URL + "/users"));
+            result.findViewById(R.id.logout_button).setOnClickListener(new LogoutListener());
         }
+
+        return result;
     }
 
     @Override
     public void onDestroy() {
+        webView.loadUrl("about:blank");
         if (adView != null) adView.destroy();
         super.onDestroy();
     }
 
     @Override
-    protected void beforeInitialLoad() {
-        WebSettings settings = webView().getSettings();
-        String userAgent = settings.getUserAgentString();
-        settings.setUserAgentString(userAgent + " famn.content_only");
-    }
-
-    @Override
-    protected String topUrl() {
-        return APP_URL;
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //  戻るボタンで戻る
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+            webView.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options, menu);
-
+        inflater.inflate(R.menu.actions, menu);
         //  後で使うのでとっておく
-        faceItem = menu.findItem(R.id.menu_compose);
-        usersItem = menu.findItem(R.id.menu_users);
-
-        return true;
+        faceItem = menu.findItem(R.id.action_compose);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
-            case R.id.menu_reload:
-                webView().reload();
+            case android.R.id.home:
+                slidingMenu.toggle();
                 return true;
-            case R.id.menu_home:
-                webView().loadUrl(APP_URL);
+            case R.id.action_reload:
+                webView.reload();
                 return true;
-            case R.id.menu_logout:
-                logout();
-                return true;
-            case R.id.menu_about:
-                webView().loadUrl(APP_URL + "/infos/about");
-                return true;
-            case R.id.menu_setting:
-                webView().loadUrl(APP_URL + "/account/edit");
-                return true;
-            case R.id.menu_users:
-                webView().loadUrl(APP_URL + "/users");
-                return true;
-            case R.id.menu_compose:
+            case R.id.action_compose:
                 toggleComposePanel();
+                return true;
+            case R.id.action_about:
+                webView.loadUrl(APP_URL + "/infos/about");
                 return true;
         }
         return false;
@@ -249,38 +243,6 @@ public class MainActivity extends AncoActivity {
         return faceItem;
     }
 
-    private MenuItem getUsersItem() {
-        //  onCreateOptionsMenuのときに保持した値を使う（いいのか？）
-        return usersItem;
-    }
-
-    /**
-     * ログアウト処理
-     */
-    private void logout() {
-        // 確認ダイアログの生成
-        AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
-        alertDlg.setTitle(getString(R.string.confirm_title));
-        alertDlg.setMessage(getString(R.string.confirm_logout));
-        alertDlg.setPositiveButton(
-                "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        webView().postUrl(APP_URL + "/session", "_method=delete".getBytes());
-                    }
-                });
-        alertDlg.setNegativeButton(
-                "Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-
-        // 表示
-        alertDlg.create().show();
-    }
-
-    @Override
     protected WebViewClient createWebViewClient() {
         return new FamnViewClient();
     }
@@ -323,21 +285,31 @@ public class MainActivity extends AncoActivity {
             String cookie = CookieManager.getInstance().getCookie(url);
 
             if (isAppRoot(url)) {
-                boolean aruji = false;
-                for (String pair : cookie.split(";")) {
-                    String[] kv = pair.split("=");
-                    String key = kv[0].trim();
-                    String val = kv[1].trim();
-                    if (key.equals("my_face")) {
-                        FaceManager.sharedInstance().setFace(val);
-                    } else if (key.equals("aruji")) {
-                        aruji = true;
+                if (cookie != null) {
+                    boolean aruji = false;
+                    for (String pair : cookie.split(";")) {
+                        String[] kv = pair.split("=");
+                        String key = kv[0].trim();
+                        String val = kv[1].trim();
+                        if (key.equals("my_face")) {
+                            FaceManager.sharedInstance().setFace(val);
+                        } else if (key.equals("aruji")) {
+                            aruji = true;
+                        }
+                    }
+                    //  ユーザ管理できるのは主だけ
+                    if (aruji) {
+                        slidingMenu.findViewById(R.id.menu_users).setVisibility(View.VISIBLE);
+                    } else {
+                        slidingMenu.findViewById(R.id.menu_users).setVisibility(View.GONE);
                     }
                 }
-                MenuItem item = getUsersItem();
-                if (item != null) item.setVisible(aruji);
-
-                showComposePanel();
+                MenuItem face = getFaceItem();
+                if (face != null) {
+                    face.setEnabled(true);
+                    face.setChecked(true);
+                }
+                hideComposePanel(false);
             } else {
                 hideComposePanel(true);
             }
@@ -375,7 +347,55 @@ public class MainActivity extends AncoActivity {
             String params = "message=" + messageText() + "&face=" + faceIndex();
             clearText();
             hideComposePanel(false);
-            webView().postUrl(APP_URL + "/entries", params.getBytes());
+            webView.postUrl(APP_URL + "/entries", params.getBytes());
+        }
+    }
+
+    private class MoveListener implements View.OnClickListener {
+        private String url;
+
+        MoveListener(String url) {
+            this.url = url;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (url == null) {
+                webView.reload();
+            } else {
+                webView.loadUrl(url);
+            }
+            slidingMenu.showContent(true);
+        }
+    }
+
+    private class LogoutListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            // 確認ダイアログの生成
+            AlertDialog.Builder alertDlg = new AlertDialog.Builder(MainActivity.this);
+            alertDlg.setTitle(getString(R.string.confirm_title));
+            alertDlg.setMessage(getString(R.string.confirm_logout));
+            alertDlg.setPositiveButton(
+                    "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            webView.postUrl(APP_URL + "/session", "_method=delete".getBytes());
+                            slidingMenu.showContent(true);
+                        }
+                    });
+            alertDlg.setNegativeButton(
+                    "Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            slidingMenu.showContent(true);
+
+                        }
+                    });
+
+            // 表示
+            alertDlg.create().show();
         }
     }
 }
